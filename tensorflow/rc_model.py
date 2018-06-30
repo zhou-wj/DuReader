@@ -121,6 +121,7 @@ class RCModel(object):
     def _encode(self):
         """
         Employs two Bi-LSTMs to encode passage and question separately
+        Contextual Embed Layer
         """
         with tf.variable_scope('passage_encoding'):
             self.sep_p_encodes, _ = rnn('bi-lstm', self.p_emb, self.p_length, self.hidden_size)
@@ -133,6 +134,7 @@ class RCModel(object):
     def _match(self):
         """
         The core of RC model, get the question-aware passage encoding with either BIDAF or MLSTM
+        Attention Flow Layer
         """
         if self.algo == 'MLSTM':
             match_layer = MatchLSTMLayer(self.hidden_size)
@@ -148,6 +150,7 @@ class RCModel(object):
     def _fuse(self):
         """
         Employs Bi-LSTM again to fuse the context information after match layer
+        Modeling Layer
         """
         with tf.variable_scope('fusion'):
             self.fuse_p_encodes, _ = rnn('bi-lstm', self.match_p_encodes, self.p_length,
